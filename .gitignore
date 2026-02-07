@@ -3,11 +3,19 @@ gateway
 *.exe
 *.o
 
+# SSH keys
+id_ed25519*
+ssh-agent*
+ssh-keygen*
+eval*
+
+
 # Ignore Python cache
 __pycache__/
 *.pyc
+venv/
 
-# Ignore VS Code settings (optional, but good practice)
+# Ignore VS Code settings and extensions
 .vscode/
 
 # Ignore System files
