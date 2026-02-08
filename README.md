@@ -49,16 +49,16 @@ All communication is implemented using TCP and UDP sockets to ensure full portab
 
 ## 📂 Project Structure
 
-- `sensor/`  
+- `sensor`  
   Generates voltage data and injects fault conditions
 
-- `gateway/`  
+- `gateway`  
   Receives and validates frames, forwards data
 
-- `ai_validator/`  
+- `ai_validator`  
   Trains and monitors anomalies using AI
 
-- README.md
+- `README.md`
 
 
 ---

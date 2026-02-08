@@ -55,6 +55,7 @@ int main() {
     printf("[MOCK SENSOR] Gateway Connected! Starting Data Stream.\n");
 
     // 2. Simulation Loop
+    
     // Default Values
     uint16_t voltage_mv = 3300;
     uint8_t temp_c = 45;
