@@ -63,23 +63,27 @@ int main() {
 
     while (1) {
         total_packets_sent++;
-        // Simple User Input Simulation
-        // We auto-fluctuate values slightly to make it look real
-        
+                
         // Random tiny fluctuation (-10 to +10 mV)
-        // Normal Behavior (Sawtooth pattern)
-        int noise = (rand() % 20) - 10;
-        voltage_mv += 10; 
+        // Normal Behavior (Sawtooth pattern to trick the AI into thinking it's "real" data)
+        int noise = (rand() % 21) - 10;   // -10 mV to +10 mV
+
+        voltage_mv += 10;
+        voltage_mv += noise;
+
         if (voltage_mv > 4000) voltage_mv = 3000;
+        if (voltage_mv < 100)  voltage_mv = 100;
         
         // --- THE HACK ---
         // Only start glitching after 300 packets (30 seconds)
         // This gives the AI time to learn "Clean" data first.
         if (total_packets_sent > 300) {
-            // Every 50th packet, trigger the fault
-            if (total_packets_sent % 50 == 0) {
+            
+            int chance = (rand() % 100) + 1; // create a random number between 1 and 100
+
+            // 2. 2% probability of fault (the chance might be 1 or 2)
+            if (chance <= 2){
                 voltage_mv = 100; // BATTERY FAILURE!
-                printf(" [!!! GENERATING FAULT !!!] ");
             }
         }
 

@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <stdint.h>
+#include <time.h>
 
 #define SENSOR_IP "127.0.0.1"
 #define SENSOR_PORT 4000  // Connected to mock_sensor.c
@@ -75,6 +76,9 @@ int main() {
     // ------------------------------------------------
     // 3. Main Loop
     // ------------------------------------------------
+    
+    srand(time(NULL));  // Seed the random generator once - or each will have same pattern
+
     while (1) {
         int bytes_read = 0;
         // Read exactly 5 bytes (blocking)
@@ -127,7 +131,7 @@ int main() {
         sendto(sock_udp, &frame, sizeof(frame), 0, 
                (struct sockaddr*)&udp_addr, sizeof(udp_addr));
 
-        printf("[TX UDP] Volt:%4dmV | Temp:%3dC | Status:0x%02X\n", voltage_mv, temp, status);
+        // printf("[TX UDP] Volt:%4dmV | Temp:%3dC | Status:0x%02X\n", voltage_mv, temp, status);
     }
     return 0;
 }
