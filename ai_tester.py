@@ -21,6 +21,7 @@ import warnings
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import IsolationForest
+# import matplotlib.pyplot as plt
 
 # ------------------------------------------------------------
 # Configuration
@@ -76,7 +77,7 @@ def parse_can_frame(data):
     return can_id, voltage, temp, status
 
 
-def explain_anomaly(vvoltage, delta_v, noise_std, temp):
+def explain_anomaly(voltage, delta_v, noise_std, temp):
     """
     Try to explain why the AI thinks this sample is abnormal.
     These rules make the AI output easier to trust and defend.
@@ -153,6 +154,14 @@ while len(training_features) < TRAINING_SAMPLES:
 print("[PHASE 1] COMPLETE")
 print("Baseline behavior captured")
 
+# Save training data for learning curve analysis
+df_training = pd.DataFrame(
+    training_features,
+    columns=["Voltage", "DeltaVoltage", "NoiseStd", "Temperature"]
+)
+df_training.to_csv('training_data.csv', index=False)
+print("Training data saved to training_data.csv")
+
 # ------------------------------------------------------------
 # PHASE 2: AI Model Training
 # ------------------------------------------------------------
@@ -196,7 +205,7 @@ print("-------------------------------------------------")
 
 print("\n\n Collecting 10-min data...")
 start_time = time.time()
-COLLECTION_TIME = 10 * 60  # 10 minutes in seconds
+COLLECTION_TIME = 3 * 60  # 3 minutes in seconds
 data_log = []
 
 
@@ -225,17 +234,11 @@ try:
 
             sample = [[voltage, delta_v, noise_std, temp]]
             prediction = model.predict(sample)[0]
+            score = model.decision_function(sample)[0]
 
-            # Collecting the data for visualization and analysis later
-            data_log.append({
-                "Time": time.time() - start_time,
-                "Voltage": voltage,
-                "DeltaVoltage": delta_v,
-                "NoiseStd": noise_std,
-                "Temperature": temp,
-                "Anomaly": prediction == -1
-            })
-            # This above part is optional but help to understand the behaviour
+            persistent = False
+            reason = ""
+            action = ""
 
             # Track anomaly history for persistence logic
             anomaly_history.append(prediction == -1)
@@ -244,6 +247,7 @@ try:
 
             # Phase C: only act if anomaly persists
             if anomaly_history.count(True) >= ANOMALY_THRESHOLD:
+                persistent = True
                 reason = explain_anomaly(voltage, delta_v, noise_std, temp)
                 action = ai_recommendation(reason)
 
@@ -262,61 +266,79 @@ try:
                     f"Noise={noise_std:6.2f}"
                 )
 
+            # Collecting the data for visualization and analysis later
+            data_log.append({
+                "Time": time.time() - start_time,
+                "Voltage": voltage,
+                "DeltaVoltage": delta_v,
+                "NoiseStd": noise_std,
+                "Temperature": temp,
+                "Anomaly": prediction == -1,
+                "AnomalyScore": score,
+                "PersistentAnomaly": persistent,
+                "Reason": reason,
+                "Action": action
+            })
+
         prev_voltage = voltage
         time.sleep(0.01)
 
 except KeyboardInterrupt:
     print("\nAI monitoring stopped gracefully")
 
+# Save monitoring data to CSV
+df_log = pd.DataFrame(data_log)
+df_log.to_csv('monitoring_log.csv', index=False)
+print("Monitoring data saved to monitoring_log.csv")
+
 # ----------------------------
 # PHASE 4: Plotting Results -> Totally Optional part for learning purpose
 # ----------------------------
 
-print("\n[PHASE 4] Plotting detailed graphs...")
-df_log = pd.DataFrame(data_log)
+# print("\n[PHASE 4] Plotting detailed graphs...")
 
-plt.figure(figsize=(15,12))
+# plt.figure(figsize=(15,12))
 
-# Voltage
-plt.subplot(4,1,1)
-plt.plot(df_log["Time"], df_log["Voltage"], label="Voltage", color="blue")
-plt.scatter(df_log["Time"][df_log["Anomaly"]], df_log["Voltage"][df_log["Anomaly"]],
-            color="red", label="Anomaly", marker="x")
-plt.ylabel("Voltage (mV)")
-plt.title("Voltage vs Time with Anomalies")
-plt.legend()
-plt.grid(True)
+# # Voltage
+# plt.subplot(4,1,1)
+# plt.plot(df_log["Time"], df_log["Voltage"], label="Voltage", color="blue")
+# plt.scatter(df_log["Time"][df_log["Anomaly"]], df_log["Voltage"][df_log["Anomaly"]],
+#             color="red", label="Anomaly", marker="x")
+# plt.ylabel("Voltage (mV)")
+# plt.title("Voltage vs Time with Anomalies")
+# plt.legend()
+# plt.grid(True)
 
-# Delta Voltage
-plt.subplot(4,1,2)
-plt.plot(df_log["Time"], df_log["DeltaVoltage"], label="Delta Voltage", color="green")
-plt.scatter(df_log["Time"][df_log["Anomaly"]], df_log["DeltaVoltage"][df_log["Anomaly"]],
-            color="red", marker="x")
-plt.ylabel("Delta Voltage (mV)")
-plt.title("Delta Voltage vs Time")
-plt.legend()
-plt.grid(True)
+# # Delta Voltage
+# plt.subplot(4,1,2)
+# plt.plot(df_log["Time"], df_log["DeltaVoltage"], label="Delta Voltage", color="green")
+# plt.scatter(df_log["Time"][df_log["Anomaly"]], df_log["DeltaVoltage"][df_log["Anomaly"]],
+#             color="red", marker="x")
+# plt.ylabel("Delta Voltage (mV)")
+# plt.title("Delta Voltage vs Time")
+# plt.legend()
+# plt.grid(True)
 
-# Noise
-plt.subplot(4,1,3)
-plt.plot(df_log["Time"], df_log["NoiseStd"], label="Noise StdDev", color="purple")
-plt.scatter(df_log["Time"][df_log["Anomaly"]], df_log["NoiseStd"][df_log["Anomaly"]],
-            color="red", marker="x")
-plt.ylabel("Noise StdDev")
-plt.title("Noise over Time")
-plt.legend()
-plt.grid(True)
+# # Noise
+# plt.subplot(4,1,3)
+# plt.plot(df_log["Time"], df_log["NoiseStd"], label="Noise StdDev", color="purple")
+# plt.scatter(df_log["Time"][df_log["Anomaly"]], df_log["NoiseStd"][df_log["Anomaly"]],
+#             color="red", marker="x")
+# plt.ylabel("Noise StdDev")
+# plt.title("Noise over Time")
+# plt.legend()
+# plt.grid(True)
 
-# Temperature
-plt.subplot(4,1,4)
-plt.plot(df_log["Time"], df_log["Temperature"], label="Temperature", color="orange")
-plt.scatter(df_log["Time"][df_log["Anomaly"]], df_log["Temperature"][df_log["Anomaly"]],
-            color="red", marker="x")
-plt.xlabel("Time (s)")
-plt.ylabel("Temp (°C)")
-plt.title("Temperature vs Time with Anomalies")
-plt.legend()
-plt.grid(True)
+# # Temperature
+# plt.subplot(4,1,4)
+# plt.plot(df_log["Time"], df_log["Temperature"], label="Temperature", color="orange")
+# plt.scatter(df_log["Time"][df_log["Anomaly"]], df_log["Temperature"][df_log["Anomaly"]],
+#             color="red", marker="x")
+# plt.xlabel("Time (s)")
+# plt.ylabel("Temp (°C)")
+# plt.title("Temperature vs Time with Anomalies")
+# plt.legend()
+# plt.grid(True)
 
-plt.tight_layout()
-plt.show()
+# plt.tight_layout()
+# plt.show()
