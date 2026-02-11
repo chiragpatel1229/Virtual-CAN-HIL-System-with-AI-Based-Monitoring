@@ -49,22 +49,22 @@ Communication between components uses standard TCP (sensor → gateway) and UDP 
 
 ## 📂 Project Structure
 
+.
 ├── README.md
-│
+├── Makefile
 ├── c_src/
-│   ├── common/          # Shared protocol definitions and headers
-│   ├── mock_sensor/     # Sensor simulation logic (STM32 behavior)
-│   ├── gateway/         # ECU Gateway & Safety Logic
-│   ├── main/            # Entry points for C binaries
-│   └── Makefile         # Build automation
+│   ├── common/        # Shared protocol definitions and headers
+│   ├── mock_sensor/   # Sensor simulation logic (STM32 behavior)
+│   ├── gateway/       # ECU Gateway and Safety Logic
+│   └── main/          # Entry points for C binaries
 ├── python/
-│   ├── main.py          # AI Monitoring entry point
-│   ├── config.py        # Hyperparameters (Window size, contamination)
-│   ├── can_parser.py    # UDP/CAN frame decoding
-│   ├── ai_model.py      # Isolation Forest implementation
-│   └── monitor.py       # Live visualization and logging logic
-├── logs/                # Data logs and saved plots
-└── README.md
+│   ├── main.py        # AI Monitoring entry point
+│   ├── config.py      # Hyperparameters
+│   ├── can_parser.py  # UDP or CAN frame decoding
+│   ├── ai_model.py    # Isolation Forest implementation
+│   └── monitor.py     # Live visualization and logging
+└── logs/              # Data logs and saved plots
+
 
 
 - **`c_src/`** → All embedded-style C code (modularized: common utilities, sensor simulation, gateway logic, main entry points)
