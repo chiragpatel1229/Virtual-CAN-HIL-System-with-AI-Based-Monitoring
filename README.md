@@ -48,7 +48,7 @@ Communication between components uses standard TCP (sensor → gateway) and UDP 
 ---
 
 ## 📂 Project Structure
-
+```
 .
 ├── README.md
 ├── Makefile
@@ -64,7 +64,7 @@ Communication between components uses standard TCP (sensor → gateway) and UDP 
 │   ├── ai_model.py    # Isolation Forest implementation
 │   └── monitor.py     # Live visualization and logging
 └── logs/              # Data logs and saved plots
-
+```
 
 - **`c_src/`** → All embedded-style C code (modularized: common utilities, sensor simulation, gateway logic, main entry points)
 - **`python/`** → Contains the AI-based monitoring, data parsing, model training, and visualization logic  
