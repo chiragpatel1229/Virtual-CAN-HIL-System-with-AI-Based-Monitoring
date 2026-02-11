@@ -64,6 +64,9 @@ Communication between components uses standard TCP (sensor → gateway) and UDP 
 │   ├── ai_model.py    # Isolation Forest implementation
 │   └── monitor.py     # Live visualization and logging
 └── logs/              # Data logs and saved plots
+    ├── .gitkeep
+    └── live_monitoring_log.csv       ← example / sample result file
+    
 ```
 
 - **`c_src/`** → All embedded-style C code (modularized: common utilities, sensor simulation, gateway logic, main entry points)
