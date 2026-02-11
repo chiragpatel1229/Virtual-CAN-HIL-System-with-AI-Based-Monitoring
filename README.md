@@ -48,36 +48,29 @@ Communication between components uses standard TCP (sensor → gateway) and UDP 
 ---
 
 ## 📂 Project Structure
-virtual-hil-battery-ai/
-│
+
 ├── README.md
 │
 ├── c_src/
-│   ├── common/
-│   │   ├── protocol files
-│   │
-│   ├── mock_sensor/
-│   │   ├── mock_sensor files
-│   │
-│   ├── gateway/
-│   │   ├── gateway files
-|   |
-│   ├── main/
-│   |    ├── mock_sensor_main files
-│   │
-│   └── Makefile               # Optional: build automation
-│
+│   ├── common/          # Shared protocol definitions and headers
+│   ├── mock_sensor/     # Sensor simulation logic (STM32 behavior)
+│   ├── gateway/         # ECU Gateway & Safety Logic
+│   ├── main/            # Entry points for C binaries
+│   └── Makefile         # Build automation
 ├── python/
-│   └── main + config + can_parser + ai_model + monitor - files
-│
-├── logs/
-│   └── .gitkeep
-│
-└── Makefile               # Optional: build automation
+│   ├── main.py          # AI Monitoring entry point
+│   ├── config.py        # Hyperparameters (Window size, contamination)
+│   ├── can_parser.py    # UDP/CAN frame decoding
+│   ├── ai_model.py      # Isolation Forest implementation
+│   └── monitor.py       # Live visualization and logging logic
+├── logs/                # Data logs and saved plots
+└── README.md
 
-- `c_src/` → All embedded-style C code (modularized: common protocol, sensor, gateway, main entry points)  
-- `python/` → AI monitoring, parsing, model training and visualization  
-- `logs/` → Placeholder for future log / CSV outputs (kept trackable with `.gitkeep`)
+
+- **`c_src/`** → All embedded-style C code (modularized: common utilities, sensor simulation, gateway logic, main entry points)
+- **`python/`** → Contains the AI-based monitoring, data parsing, model training, and visualization logic  
+- **`logs/`** → Placeholder for future log / CSV outputs (kept trackable with `.gitkeep`)
+- **`Makefile`** → (optional) Simplifies building the C components
 
 ---
 
