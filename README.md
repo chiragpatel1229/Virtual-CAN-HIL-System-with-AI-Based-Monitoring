@@ -51,12 +51,12 @@ Communication between components uses standard TCP (sensor → gateway) and UDP 
 ```
 .
 ├── README.md
-├── Makefile
 ├── c_src/
 │   ├── common/        # Shared protocol definitions and headers
 │   ├── mock_sensor/   # Sensor simulation logic
 │   ├── gateway/       # ECU Gateway and Safety Logic
-│   └── main/          # Entry points for C binaries
+│   ├── main/          # Entry points for C binaries
+│   └── Makefil        # Optional: build automation
 ├── python/
 │   ├── main.py        # AI Monitoring entry point
 │   ├── config.py      # Hyperparameters
